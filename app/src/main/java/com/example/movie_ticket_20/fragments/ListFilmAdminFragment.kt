@@ -1,60 +1,113 @@
 package com.example.movie_ticket_20.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.movie_ticket_20.Movie
+import com.example.movie_ticket_20.MovieAdapter
+import com.example.movie_ticket_20.MovieFormActivity
 import com.example.movie_ticket_20.R
+import com.example.movie_ticket_20.databinding.FragmentListFilmAdminBinding
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ListFilmAdminFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ListFilmAdminFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentListFilmAdminBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var movieAdapter: MovieAdapter
+    private lateinit var recyclerView: RecyclerView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
+    private lateinit var firestore: FirebaseFirestore
+    private val movieList: ArrayList<Movie> = ArrayList()
+    private lateinit var movieCollectionRef: CollectionReference
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentListFilmAdminBinding.inflate(inflater, container, false)
+        val view = binding.root
+
+        firestore = FirebaseFirestore.getInstance()
+        movieCollectionRef = firestore.collection("movies")
+
+        setupRecyclerView()
+        setupButtons()
+
+        loadMoviesFromFirestore()
+
+        return view
+    }
+
+    private fun setupRecyclerView() {
+        recyclerView = binding.rvMovie
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        movieAdapter = MovieAdapter(movieList,
+            onItemClick = { selectedMovie ->
+                navigateToUpdateMovie(selectedMovie)
+            },
+            onItemLongClick = { movieToDelete ->
+                deleteMovie(movieToDelete)
+            }
+        )
+        recyclerView.adapter = movieAdapter
+    }
+
+    private fun setupButtons() {
+        binding.btnTambah.setOnClickListener {
+            navigateToAddMovie()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_film_admin, container, false)
+    private fun navigateToAddMovie() {
+        val intent = Intent(requireContext(), MovieFormActivity::class.java)
+        intent.putExtra("action_type", "add")
+        startActivity(intent)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ListFilmAdminFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ListFilmAdminFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun navigateToUpdateMovie(movie: Movie) {
+        val intent = Intent(requireContext(), MovieFormActivity::class.java)
+        intent.putExtra("action_type", "update")
+        intent.putExtra("movie_id", movie.movieID) // or any other necessary data
+        startActivity(intent)
+    }
+
+    private fun loadMoviesFromFirestore() {
+        movieCollectionRef.get()
+            .addOnSuccessListener { documents ->
+                movieList.clear()
+                for (document in documents) {
+                    val movie = document.toObject(Movie::class.java)
+                    movieList.add(movie)
                 }
+                movieAdapter.notifyDataSetChanged() // Update adapter after data retrieval
             }
+            .addOnFailureListener { e ->
+                // Handle failure
+            }
+    }
+
+    private fun deleteMovie(movie: Movie) {
+        movieCollectionRef.document(movie.movieID)
+            .delete()
+            .addOnSuccessListener {
+                movieList.remove(movie)
+                movieAdapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                // Handle failure
+            }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

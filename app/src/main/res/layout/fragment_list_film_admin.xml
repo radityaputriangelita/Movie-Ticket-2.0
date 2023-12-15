@@ -6,12 +6,38 @@
     tools:context=".fragments.ListFilmAdminFragment">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="LIST"
-            android:layout_centerInParent="true"/>
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:text="NOW SHOWING MOVIE"
+                android:textColor="@color/orange"
+                android:textAlignment="center"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:textStyle="bold"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_movie"
+                tools:listitem="@layout/item_movie"
+                tools:itemCount="10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <Button
+            android:id="@+id/btn_tambah"
+            android:layout_width="150px"
+            android:layout_height="150px"
+            android:layout_alignParentBottom="true"
+            android:text="+"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/blue"/>
     </RelativeLayout>
 
 </FrameLayout>

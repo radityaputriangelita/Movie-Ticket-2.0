@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MovieFormActivity">
+
+    <ImageButton
+        android:id="@+id/btn_back_from_form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_back_ios_24"
+        android:backgroundTint="@color/white"
+        android:layout_alignBottom="@id/movie_form"
+        android:layout_marginLeft="10dp"/>
+    <TextView
+        android:id="@+id/movie_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:text="MOVIE FORM"
+        android:textColor="@color/orange"
+        android:textAlignment="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:id="@+id/form"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/movie_form"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/movie_image_form"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            tools:srcCompat="@tools:sample/avatars"
+            android:clickable="true"/>
+
+        <EditText
+            android:id="@+id/input_movie_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Judul Film" />
+
+        <EditText
+            android:id="@+id/input_movie_Directore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Movie Director" />
+
+        <EditText
+            android:id="@+id/input_movie_rateR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Movie Rate Umur" />
+
+        <EditText
+            android:id="@+id/input_movie_Desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Movie Descripsion" />
+
+        <EditText
+            android:id="@+id/input_movie_rateS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Movie Rate Star (1-5)" />
+    </LinearLayout>
+    <Button
+        android:id="@+id/btnadd_movie_form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Movie"
+        android:backgroundTint="@color/blue"
+        android:layout_below="@id/form"
+        android:layout_centerHorizontal="true"/>
+    <Button
+        android:id="@+id/btnupdate_movie_form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update Movie"
+        android:backgroundTint="@color/blue"
+        android:layout_below="@id/form"
+        android:layout_centerHorizontal="true"/>
+
+
+</RelativeLayout>
