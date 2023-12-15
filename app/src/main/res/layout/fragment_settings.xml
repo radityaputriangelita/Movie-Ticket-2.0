@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.SettingsFragment">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/pengguna_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PENGGUNA"
+            android:layout_centerInParent="true"/>
+        <Button
+            android:id="@+id/btn_logout_pengguna"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pengguna_text"
+            android:layout_centerHorizontal="true"
+            android:text="L O G O U T"/>
+    </RelativeLayout>
+</FrameLayout>

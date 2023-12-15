@@ -4,28 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <TextView
-        android:id="@+id/hello"
-        android:layout_width="wrap_content"
+    tools:context=".Main">
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout_admin"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello"
-        android:layout_centerInParent="true"/>
-    <TextView
-        android:id="@+id/username_xml"
-        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"/>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager_admin"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Username"
-        android:layout_below="@id/hello"
-        android:layout_centerHorizontal="true"
-        />
-    <Button
-        android:id="@+id/btn_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/username_xml"
-        android:layout_centerHorizontal="true"
-        android:text="L O G O U T"/>
-
+        android:layout_below="@id/tab_layout_admin"/>
 </RelativeLayout>

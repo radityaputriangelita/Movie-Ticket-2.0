@@ -42,7 +42,7 @@ class Signin : AppCompatActivity() {
                         if (document != null) {
                             val role = document.getString("role")
                             if (role == "admin") {
-                                val intent = Intent(this@Signin, MainActivity::class.java)
+                                val intent = Intent(this@Signin, Main::class.java)
                                 startActivity(intent)
                             } else {
                                 val intent = Intent(this@Signin, Pengguna::class.java)
@@ -87,7 +87,7 @@ class Signin : AppCompatActivity() {
                                             val role = document.getString("role")
                                             if(role == "admin"){
                                                 //intent ke admin page
-                                                val intent = Intent(this@Signin, MainActivity::class.java)
+                                                val intent = Intent(this@Signin, Main::class.java)
                                                 startActivity(intent)
                                             }else{
                                                 //ke pengguna page

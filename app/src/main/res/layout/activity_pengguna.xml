@@ -5,18 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Pengguna">
-    <TextView
-        android:id="@+id/pengguna_text"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/fl_wrapper_navbottom"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="PENGGUNA"
-        android:layout_centerInParent="true"/>
-    <Button
-        android:id="@+id/btn_logout_pengguna"
-        android:layout_width="wrap_content"
+        android:layout_above="@id/bottom_nav_pengguna"/>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_pengguna"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/pengguna_text"
-        android:layout_centerHorizontal="true"
-        android:text="L O G O U T"/>
-
+        android:layout_alignParentBottom="true"
+        app:itemIconTint="@color/color_nav_item_bg"
+        app:itemTextColor="@color/white"
+        app:itemBackground="@color/blue"
+        app:menu="@menu/nav_menu_user"/>
 </RelativeLayout>
