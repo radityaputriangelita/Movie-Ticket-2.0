@@ -38,10 +38,10 @@
 
         <ImageView
             android:id="@+id/movie_image_form"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="120dp"
             android:layout_gravity="center_horizontal"
-            tools:srcCompat="@tools:sample/avatars"
+            android:src="@drawable/gambar_input"
             android:clickable="true"/>
 
         <EditText

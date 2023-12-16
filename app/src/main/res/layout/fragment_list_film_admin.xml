@@ -16,7 +16,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="25sp"
-                android:text="NOW SHOWING MOVIE"
+                android:text="LIST MOVIE"
                 android:textColor="@color/orange"
                 android:textAlignment="center"
                 android:layout_marginTop="20dp"

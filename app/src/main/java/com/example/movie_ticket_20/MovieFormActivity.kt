@@ -1,14 +1,24 @@
 package com.example.movie_ticket_20
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
+import com.bumptech.glide.Glide
 import com.example.movie_ticket_20.databinding.ActivityMovieFormBinding
 import com.example.movie_ticket_20.fragments.ListFilmAdminFragment
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.storage
+import java.net.URI
 
 class MovieFormActivity : AppCompatActivity() {
     // Inisialisasi Firestore
@@ -16,20 +26,31 @@ class MovieFormActivity : AppCompatActivity() {
     private val movieCollectionRef = firestore.collection("movies")
     private lateinit var binding: ActivityMovieFormBinding
     private var movieId = ""
+    private lateinit var storage: FirebaseStorage
+    private lateinit var imageReference: StorageReference
+    private var ImagePath: Uri? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMovieFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val movieTitle = intent.getStringExtra("movie_title")
-        val movieDescription = intent.getStringExtra("movie_description")
+        imageReference = Firebase.storage.reference
+
         val actionType = intent.getStringExtra("action_type")
         movieId = intent.getStringExtra("movie_id") ?: ""
 
         binding.btnBackFromForm.setOnClickListener {
-            finish() // Kembali ke fragment sebelumnya
+            finish()
         }
+        binding.movieImageForm.setOnClickListener {
+            // Membuka galeri saat gambar diklik
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            imageLauncher.launch(intent)
+        }
+
 
         with(binding) {
             if (actionType == "add") {
@@ -42,9 +63,36 @@ class MovieFormActivity : AppCompatActivity() {
                     val star = inputMovieRateS.text.toString()
                     val description = inputMovieDesc.text.toString()
                     val rateUmur = inputMovieRateR.text.toString()
-                    val newMovie = Movie(moviename = title, moviedirector = director, movierateS = star, moviedesc = description, movierateR = rateUmur)
-                    addMovie(newMovie)
+                    val filename = "movie_${System.currentTimeMillis()}.jpg"
+
+                    ImagePath?.let { lastImagePath ->
+                        try {
+                            val imageRef = imageReference.child("movie_images/$filename")
+                            imageRef.putFile(lastImagePath)
+                                .addOnSuccessListener { taskSnapshot ->
+                                    imageRef.downloadUrl
+                                        .addOnSuccessListener { uri ->
+                                            val imageURL = uri.toString()
+                                            val newMovie = Movie(moviename = title, moviedirector = director, movierateS = star, moviedesc = description, movierateR = rateUmur, movieImage = imageURL
+                                            )
+                                            addMovie(newMovie)
+                                        }
+                                        .addOnFailureListener {
+                                            Log.e("Error", "Error getting URL: $it")
+                                        }
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e("Error", "Error on Upload: ${exception.message}")
+                                }
+                        } catch (e: Exception) {
+                            Log.e("Error", "Error: $e")
+                        }
+                    } ?: run {
+                        Log.e("Error", "Image not selected")
+                    }
                 }
+
+
             } else if (actionType == "update") {
                 btnaddMovieForm.visibility = View.GONE
                 btnupdateMovieForm.visibility = View.VISIBLE
@@ -61,6 +109,12 @@ class MovieFormActivity : AppCompatActivity() {
                                 inputMovieRateS.setText(it.movierateS)
                                 inputMovieDesc.setText(it.moviedesc)
                                 inputMovieRateR.setText(it.movierateR)
+
+                                Glide.with(this@MovieFormActivity)
+                                    .load(it.movieImage) // URL gambar sebelumnya dari Firestore
+                                    .placeholder(R.drawable.load) // Placeholder image
+                                    .error(R.drawable.error) // Image on error
+                                    .into(binding.movieImageForm)
                             }
                         } else {
                             // Handle jika data tidak ditemukan
@@ -77,7 +131,38 @@ class MovieFormActivity : AppCompatActivity() {
                     val description = inputMovieDesc.text.toString()
                     val rateUmur = inputMovieRateR.text.toString()
                     val movieToUpdate = Movie(moviename = title, moviedirector = director, movierateS = star, moviedesc = description, movierateR = rateUmur)
-                    updateMovie(movieToUpdate)
+                    ImagePath?.let { lastImagePath ->
+                        try {
+                            val imageRef = imageReference.child("movie_images/${System.currentTimeMillis()}.jpg")
+                            imageRef.putFile(lastImagePath)
+                                .addOnSuccessListener { taskSnapshot ->
+                                    imageRef.downloadUrl
+                                        .addOnSuccessListener { uri ->
+                                            val imageURL = uri.toString()
+
+                                            // Memperbarui movieImage jika ada gambar baru diunggah
+                                            val updatedMovie = if (imageURL.isNotEmpty()) {
+                                                movieToUpdate.copy(movieImage = imageURL)
+                                            } else {
+                                                movieToUpdate // Jika tidak ada gambar baru, tetap menggunakan movieImage sebelumnya
+                                            }
+
+                                            // Update data film di Firestore
+                                            updateMovie(updatedMovie)
+                                        }
+                                        .addOnFailureListener {
+                                            Log.e("Error", "Error getting URL: $it")
+                                        }
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e("Error", "Error on Upload: ${exception.message}")
+                                }
+                        } catch (e: Exception) {
+                            Log.e("Error", "Error: $e")
+                        }
+                    } ?: run {
+                        Log.e("Error", "Image not selected")
+                    }
                 }
             }
         }
@@ -104,6 +189,7 @@ class MovieFormActivity : AppCompatActivity() {
 
 
 
+
     private fun updateMovie(movie: Movie) {
         val movieToUpdate = movie.copy(movieID = movieId)
         movieCollectionRef.document(movieId).set(movieToUpdate, SetOptions.merge())
@@ -116,6 +202,17 @@ class MovieFormActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.d("MovieFormActivity", "Error updating document", exception)
             }
+    }
+
+    private val imageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if(result.resultCode == RESULT_OK){
+            result?.data?.data?.let {
+                ImagePath = it
+                binding.movieImageForm.setImageURI(it)
+            }
+        }else{
+            Toast.makeText(this, "canceled", Toast.LENGTH_SHORT).show()
+        }
     }
 
 }

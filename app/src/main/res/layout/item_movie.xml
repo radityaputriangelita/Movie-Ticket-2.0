@@ -25,7 +25,7 @@
                 android:id="@+id/movie_image"
                 android:layout_width="109dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/johnwick"/>
+                android:src="@drawable/load"/>
 
             <TextView
                 android:id="@+id/txt_movie_title"

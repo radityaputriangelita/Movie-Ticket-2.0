@@ -1,12 +1,17 @@
 package com.example.movie_ticket_20
 
+import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movie_ticket_20.Movie
 import java.util.ArrayList
+import com.bumptech.glide.Glide
+
+
 
 class MovieAdapter(private val movieList: ArrayList<Movie>, private val onItemClick: (Movie) -> Unit,
                    private val onItemLongClick: (Movie) -> Unit) :
@@ -16,6 +21,8 @@ class MovieAdapter(private val movieList: ArrayList<Movie>, private val onItemCl
         var title: TextView = itemView.findViewById(R.id.txt_movie_title)
         var director: TextView = itemView.findViewById(R.id.txt_movie_director)
         var rating: TextView = itemView.findViewById(R.id.int_movie_rateS)
+        var batasUmur: TextView = itemView.findViewById(R.id.int_movie_rateR)
+        var movieImage: ImageView = itemView.findViewById(R.id.movie_image)
 
         init {
             itemView.setOnClickListener {
@@ -39,6 +46,12 @@ class MovieAdapter(private val movieList: ArrayList<Movie>, private val onItemCl
             title.text = movie.moviename
             director.text = movie.moviedirector
             rating.text = movie.movierateS.toString()
+            batasUmur.text = movie.movierateR.toString()
+            Glide.with(itemView)
+                .load(movie.movieImage) // Assuming movieImage is the URL in your Movie data class
+                .placeholder(R.drawable.load) // Placeholder image while loading
+                .error(R.drawable.error) // Image to show in case of error loading
+                .into(movieImage)
         }
     }
 
@@ -54,9 +67,8 @@ class MovieAdapter(private val movieList: ArrayList<Movie>, private val onItemCl
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val currentMovie = movieList[position]
-        holder.title.text = currentMovie.moviename
-        holder.director.text = currentMovie.moviedirector
-        holder.rating.text = currentMovie.movierateS.toString()
+        holder.bind(currentMovie)
     }
+
 }
 
