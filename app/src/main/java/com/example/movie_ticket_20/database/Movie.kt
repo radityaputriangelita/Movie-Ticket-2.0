@@ -1,4 +1,4 @@
-package com.example.movie_ticket_20
+package com.example.movie_ticket_20.database
 
 data class Movie(
     val movieID: String = "",

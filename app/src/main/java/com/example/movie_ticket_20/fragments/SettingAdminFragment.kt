@@ -42,7 +42,9 @@ class SettingAdminFragment : Fragment() {
                 .addOnSuccessListener { document ->
                     if (document != null) {
                         val username = document.getString("username")
+                        val email = user.email
                         binding.usernameXml.text = username
+                        binding.emailXml.text = email
                     }
                 }
         }

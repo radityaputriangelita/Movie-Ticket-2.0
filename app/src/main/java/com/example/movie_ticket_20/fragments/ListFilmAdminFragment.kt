@@ -8,10 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.movie_ticket_20.Movie
+import com.example.movie_ticket_20.database.Movie
 import com.example.movie_ticket_20.MovieAdapter
 import com.example.movie_ticket_20.MovieFormActivity
-import com.example.movie_ticket_20.R
 import com.example.movie_ticket_20.databinding.FragmentListFilmAdminBinding
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore

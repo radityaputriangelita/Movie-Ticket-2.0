@@ -7,9 +7,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
+import com.example.movie_ticket_20.database.Movie
 import com.example.movie_ticket_20.databinding.ActivityMovieFormBinding
 import com.example.movie_ticket_20.fragments.ListFilmAdminFragment
 import com.google.firebase.Firebase
@@ -18,7 +18,6 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
-import java.net.URI
 
 class MovieFormActivity : AppCompatActivity() {
     // Inisialisasi Firestore

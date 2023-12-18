@@ -6,17 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".Main">
     <TextView
-        android:id="@+id/hello"
+        android:id="@+id/email_xml"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello"
+        android:text="EMAIL"
         android:layout_centerInParent="true"/>
     <TextView
         android:id="@+id/username_xml"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="USERNAME"
-        android:layout_below="@id/hello"
+        android:layout_below="@id/email_xml"
         android:layout_centerHorizontal="true"
         />
     <Button

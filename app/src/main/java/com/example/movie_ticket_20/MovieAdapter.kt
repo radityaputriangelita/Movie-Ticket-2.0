@@ -1,13 +1,12 @@
 package com.example.movie_ticket_20
 
-import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.movie_ticket_20.Movie
+import com.example.movie_ticket_20.database.Movie
 import java.util.ArrayList
 import com.bumptech.glide.Glide
 
