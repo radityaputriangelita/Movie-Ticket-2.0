@@ -18,6 +18,13 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
+import android.content.Context
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import com.example.movie_ticket_20.databinding.ActivityMainBinding
 
 class MovieFormActivity : AppCompatActivity() {
     // Inisialisasi Firestore
@@ -29,11 +36,16 @@ class MovieFormActivity : AppCompatActivity() {
     private lateinit var imageReference: StorageReference
     private var ImagePath: Uri? = null
 
+    private val channelId = "TEST_NOTIFICATION"
+    private val notifId = 90
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMovieFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val notifManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         imageReference = Firebase.storage.reference
 
@@ -52,6 +64,18 @@ class MovieFormActivity : AppCompatActivity() {
 
 
         with(binding) {
+            PendingIntent.FLAG_IMMUTABLE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Log.d("aneh", "bebas")
+                val notifChannel = NotificationChannel(
+                    channelId,
+                    "Notification Movie",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+                notifManager.createNotificationChannel(notifChannel)
+            }
+
+
             if (actionType == "add") {
                 btnaddMovieForm.visibility = View.VISIBLE
                 btnupdateMovieForm.visibility = View.GONE
@@ -176,14 +200,29 @@ class MovieFormActivity : AppCompatActivity() {
         newMovieRef
             .set(movieWithID) // Set data film with the updated movieID
             .addOnSuccessListener {
-                val intent = Intent(this@MovieFormActivity, ListFilmAdminFragment::class.java)
+                // Setelah notifikasi ditampilkan, kembali ke halaman utama
+                val intent = Intent(this@MovieFormActivity, Main::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
+
+                val notifManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                val builder = NotificationCompat.Builder(this, channelId)
+                    .setSmallIcon(R.drawable.baseline_notifications_24)
+                    .setContentTitle("FILM")
+                    .setContentText("Berhasil menambah film")
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                notifManager.notify(notifId, builder.build())
+
+                Log.d("apake", builder.toString())
+
                 finish()
             }
             .addOnFailureListener { exception ->
                 Log.d("MovieFormActivity", "Error adding document", exception)
             }
+
     }
 
 
