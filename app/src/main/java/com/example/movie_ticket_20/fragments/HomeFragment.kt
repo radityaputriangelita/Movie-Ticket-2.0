@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.movie_ticket_20.DetailActivity
 import com.example.movie_ticket_20.MovieAdapter
 import com.example.movie_ticket_20.MovieLocalAdapter
+import com.example.movie_ticket_20.MovieLocalAdapterUser
 import com.example.movie_ticket_20.User
 import com.example.movie_ticket_20.database.Movie
 import com.example.movie_ticket_20.database.MovieDao
@@ -99,6 +100,7 @@ class HomeFragment : Fragment() {
         startActivity(intent)
     }
 
+
     private fun isOnline(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
@@ -155,14 +157,20 @@ class HomeFragment : Fragment() {
 
     private fun displayLocalMovies() {
         CoroutineScope(Dispatchers.IO).launch {
-            val movieList = movieDao.getAllMovies()
-            Log.d("LocalDatabase", "Retrieved ${movieList.size} rows from local database")
+            val localMovies = movieDao.getAllMovies()
+            Log.d("LocalDatabase", "Retrieved ${localMovies.size} rows from local database")
+
             withContext(Dispatchers.Main) {
-                val localAdapter = MovieLocalAdapter(movieList)
+                val localAdapter = MovieLocalAdapterUser(localMovies,
+                    onItemClick = { selectedMovie ->
+                        navigateToDetailMovie(selectedMovie)
+                    }
+                )
                 recyclerView.adapter = localAdapter
             }
         }
     }
+
 
     private fun loveMovie(movie: Movie) {
         val user = FirebaseAuth.getInstance().currentUser
