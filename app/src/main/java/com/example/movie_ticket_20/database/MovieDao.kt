@@ -17,6 +17,9 @@ interface MovieDao {
 
     @Query("DELETE FROM localmovies")
     fun deleteAllMovies()
+    @Query("SELECT * FROM localmovies WHERE movieID = :id")
+    fun getMovieById(id: String): Movie?
+
 
     // Pada DAO
     @Transaction

@@ -209,14 +209,11 @@ class MovieFormActivity : AppCompatActivity() {
 
                 val builder = NotificationCompat.Builder(this, channelId)
                     .setSmallIcon(R.drawable.baseline_notifications_24)
-                    .setContentTitle("FILM")
-                    .setContentText("Berhasil menambah film")
+                    .setContentTitle("M-TIX")
+                    .setContentText("Ada Film Baru yang Ditambahkan ❤️")
                     .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 notifManager.notify(notifId, builder.build())
-
-                Log.d("apake", builder.toString())
-
                 finish()
             }
             .addOnFailureListener { exception ->

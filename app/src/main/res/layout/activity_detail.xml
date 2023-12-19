@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailActivity">
+
+    <ImageButton
+        android:id="@+id/btn_back_from_form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_back_ios_24"
+        android:backgroundTint="@color/white"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="10dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/moviecard"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/white"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        android:layout_centerInParent="true">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/image_detail"
+            android:layout_width="250dp"
+            android:layout_height="320dp"
+            android:src="@drawable/load"
+            android:layout_centerHorizontal="true"/>
+        <TextView
+            android:layout_marginTop="10dp"
+            android:id="@+id/mov_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="movie title"
+            android:layout_below="@id/image_detail"
+            android:textStyle="bold"
+            android:textSize="25dp"
+            android:layout_centerHorizontal="true"/>
+        <TextView
+            android:id="@+id/mov_dierector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="directer"
+            android:layout_below="@id/mov_title"
+            android:textSize="18dp"
+            android:layout_centerHorizontal="true"/>
+        <LinearLayout
+            android:id="@+id/mov_star"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mov_dierector">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rating: "
+                android:textSize="14dp"/>
+            <ImageView
+                android:id="@+id/image_star"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/star"
+                android:layout_marginRight="5dp" />
+
+            <TextView
+                android:id="@+id/int_movie_rateS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/mov_batasUmur"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mov_star">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Batas Umur: "/>
+
+            <TextView
+                android:id="@+id/int_movie_rateR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="17"
+                android:layout_marginStart="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/mov_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+            android:layout_below="@id/mov_batasUmur"
+            android:layout_marginTop="10dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+                </RelativeLayout>
+            </ScrollView>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

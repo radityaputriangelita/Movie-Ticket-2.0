@@ -43,8 +43,10 @@ class SettingAdminFragment : Fragment() {
                     if (document != null) {
                         val username = document.getString("username")
                         val email = user.email
+                        val role = document.getString("role")
                         binding.usernameXml.text = username
                         binding.emailXml.text = email
+                        binding.roleXml.text = role
                     }
                 }
         }
