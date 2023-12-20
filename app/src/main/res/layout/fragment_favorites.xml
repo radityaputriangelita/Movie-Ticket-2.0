@@ -5,10 +5,32 @@
     android:layout_height="match_parent"
     tools:context=".fragments.FavoritesFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Favorite" />
+        android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/now_playing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FAVORITE MOVIE"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textSize="25sp"
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/now_playing">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_movie"
+            tools:listitem="@layout/item_movie"
+            tools:itemCount="10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    </RelativeLayout>
 
 </FrameLayout>

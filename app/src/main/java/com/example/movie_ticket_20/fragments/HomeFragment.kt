@@ -41,7 +41,6 @@ class HomeFragment : Fragment() {
     private val movieList: ArrayList<Movie> = ArrayList()
     private lateinit var movieCollectionRef: CollectionReference
     private lateinit var movieDao: MovieDao
-    private var isInternetConnected: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,7 +69,6 @@ class HomeFragment : Fragment() {
 
         setupRecyclerView()
 
-        isInternetConnected = isOnline(requireContext())
 
         if (isOnline(requireContext())) {
             loadMoviesFromFirestore()
