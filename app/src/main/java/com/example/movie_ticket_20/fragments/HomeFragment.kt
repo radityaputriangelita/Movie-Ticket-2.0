@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -186,8 +187,7 @@ class HomeFragment : Fragment() {
                             val updatedUser = User(it.username, it.role, updatedFavMovies)
                             userRef.set(updatedUser)
                                 .addOnSuccessListener {
-                                    // Update local UI or perform any necessary actions upon successful update
-                                    // You might want to inform the user that the movie was added to favorites
+                                    Toast.makeText(context, "Movie added to favorites", Toast.LENGTH_SHORT).show()
                                 }
                                 .addOnFailureListener { e ->
                                     // Handle failure in updating user data

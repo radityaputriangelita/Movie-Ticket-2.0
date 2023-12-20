@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movie_ticket_20.DetailActivity
@@ -38,7 +39,6 @@ class FavoritesFragment : Fragment() {
     private val movieList: ArrayList<Movie> = ArrayList()
     private lateinit var movieCollectionRef: CollectionReference
     private lateinit var movieDao: MovieDao
-    private var isInternetConnected: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +72,8 @@ class FavoritesFragment : Fragment() {
             onItemClick = { selectedMovie ->
                 navigateToDetailMovie(selectedMovie)
             },
-            onItemLongClick = { movieToFav ->
+            onItemLongClick = { selectedMovie ->
+                deleteFavoriteMovie(selectedMovie) // Panggil fungsi deleteFavoriteMovie di sini
             }
         )
         recyclerView.adapter = movieAdapter
@@ -126,16 +127,41 @@ class FavoritesFragment : Fragment() {
         intent.putExtra("movie_id", movie.movieID)
         startActivity(intent)
     }
-    private fun updateFavoriteMoviesUI(favoriteMovies: List<Movie>) {
-        movieAdapter = MovieAdapter(favoriteMovies,
-            onItemClick = { selectedMovie ->
-                navigateToDetailMovie(selectedMovie)
-            },
-            onItemLongClick = { movieToFav ->
-                // Tambahkan logika untuk aksi saat long click di sini jika diperlukan
+    private fun deleteFavoriteMovie(movie: Movie) {
+        val currentUser = firebaseAuth.currentUser
+        currentUser?.let { user ->
+            val uid = user.uid
+            val userRef = firestore.collection("user").document(uid)
+
+            userRef.get().addOnSuccessListener { documentSnapshot ->
+                val user = documentSnapshot.toObject(User::class.java)
+                user?.let {
+                    val favoriteMovies = it.moviefav as ArrayList<String>
+
+                    if (favoriteMovies.contains(movie.movieID)) {
+                        favoriteMovies.remove(movie.movieID)
+
+                        userRef.update("moviefav", favoriteMovies)
+                            .addOnSuccessListener {
+                                // Remove the clicked movie from the displayed UI
+                                movieList.removeAll { it.movieID == movie.movieID }
+                                movieAdapter.notifyDataSetChanged()
+                            }
+                            .addOnFailureListener { e ->
+                                // Handle failure in updating moviefav array
+                            }
+                    }
+                }
+            }.addOnFailureListener { e ->
+                // Handle failure in getting user data
             }
-        )
-        recyclerView.adapter = movieAdapter
+        }
     }
 
+
+    private fun updateFavoriteMoviesUI(favoriteMovies: List<Movie>) {
+        movieList.clear()
+        movieList.addAll(favoriteMovies)
+        movieAdapter.notifyDataSetChanged()
+    }
 }

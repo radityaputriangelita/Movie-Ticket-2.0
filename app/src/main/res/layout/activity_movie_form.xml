@@ -5,6 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MovieFormActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
 
     <ImageButton
         android:id="@+id/btn_back_from_form"
@@ -95,6 +102,8 @@
         android:backgroundTint="@color/blue"
         android:layout_below="@id/form"
         android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+    </ScrollView>
 
 
 </RelativeLayout>
