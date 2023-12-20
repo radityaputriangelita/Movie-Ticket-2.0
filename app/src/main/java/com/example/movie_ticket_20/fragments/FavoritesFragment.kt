@@ -146,6 +146,7 @@ class FavoritesFragment : Fragment() {
                                 // Remove the clicked movie from the displayed UI
                                 movieList.removeAll { it.movieID == movie.movieID }
                                 movieAdapter.notifyDataSetChanged()
+                                Toast.makeText(context, "Movie deleted from favorites", Toast.LENGTH_SHORT).show()
                             }
                             .addOnFailureListener { e ->
                                 // Handle failure in updating moviefav array
