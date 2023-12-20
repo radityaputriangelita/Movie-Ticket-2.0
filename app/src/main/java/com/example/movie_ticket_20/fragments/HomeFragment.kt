@@ -146,7 +146,8 @@ class HomeFragment : Fragment() {
                             onItemClick = { selectedMovie ->
                                 navigateToDetailMovie(selectedMovie)
                             }
-                        ) { movieToDelete ->
+                        ) { selectedMovie ->
+                            loveMovie(selectedMovie)
                         }
                         recyclerView.adapter = movieAdapter
                     }
@@ -171,44 +172,40 @@ class HomeFragment : Fragment() {
         }
     }
 
-
     private fun loveMovie(movie: Movie) {
-        val user = FirebaseAuth.getInstance().currentUser
-        user?.uid?.let { userId ->
-            val userRef = FirebaseFirestore.getInstance().collection("users").document(userId)
+        val currentUser = firebaseAuth.currentUser
+        currentUser?.let { user ->
+            val uid = user.uid
+            val userRef = firestore.collection("user").document(uid)
 
-            userRef.get().addOnSuccessListener { documentSnapshot ->
-                if (documentSnapshot.exists()) {
-                    val userData = documentSnapshot.toObject(User::class.java)
-                    userData?.let {
-                        val updatedMovieList = userData.moviefav.toMutableList()
-                        updatedMovieList.add(movie.movieID)
-
-                        userRef.update("moviefav", updatedMovieList)
-                            .addOnSuccessListener {
-                                // Handle success
-                            }
-                            .addOnFailureListener { e ->
-                                // Handle failure
-                            }
+            userRef.get().addOnSuccessListener { document ->
+                if (document != null) {
+                    val user = document.toObject(User::class.java)
+                    user?.let {
+                        val updatedFavMovies = it.moviefav.toMutableList()
+                        if (!updatedFavMovies.contains(movie.movieID)) {
+                            updatedFavMovies.add(movie.movieID)
+                            val updatedUser = User(it.username, it.role, updatedFavMovies)
+                            userRef.set(updatedUser)
+                                .addOnSuccessListener {
+                                    // Update local UI or perform any necessary actions upon successful update
+                                    // You might want to inform the user that the movie was added to favorites
+                                }
+                                .addOnFailureListener { e ->
+                                    // Handle failure in updating user data
+                                }
+                        } else {
+                            // The movie is already in favorites, you might want to inform the user
+                        }
                     }
-                } else {
-                    // Handle if document doesn't exist
                 }
             }.addOnFailureListener { e ->
-                // Handle failure
+                // Handle failure in getting user data
             }
         }
     }
 
-    private fun disableClicksOnRecyclerView() {
-        recyclerView.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
-            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                // Disable touch events
-                return true
-            }
-        })
-    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
