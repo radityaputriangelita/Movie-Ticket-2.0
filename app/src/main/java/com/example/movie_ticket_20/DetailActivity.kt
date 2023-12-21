@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class DetailActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityDetailBinding // Deklarasi binding
+    private lateinit var binding: ActivityDetailBinding
     private lateinit var movieId: String
     private lateinit var firestore: FirebaseFirestore
     private lateinit var movieCollectionRef: CollectionReference
@@ -28,51 +28,56 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDetailBinding.inflate(layoutInflater) // Inisialisasi binding
+        binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        //untuk online
         firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-
         movieCollectionRef = firestore.collection("movies")
+        //movie dao untuk offline
         movieDao = MovieDatabase.getDatabase(this).movieDao()
 
         movieId = intent.getStringExtra("movie_id") ?: ""
-
+        //cek online atau engga
         if (isOnline()) {
             loadMovieFromFirebase()
         } else {
             loadMovieFromRoom()
         }
-
+        //btnback ke list
         binding.btnBackFromForm.setOnClickListener {
             onBackPressed()
         }
     }
 
     private fun isOnline(): Boolean {
-        return true // Contoh: selalu kembalikan true untuk sementara
+        return true
     }
 
+    //mengambil data movie dari firebase berdasarkan ID nya.
     private fun loadMovieFromFirebase() {
         movieCollectionRef.document(movieId).get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
                     val movie = documentSnapshot.toObject(Movie::class.java)
+                    // kalau ada nanti di display
                     displayMovieData(movie)
                 }
             }
     }
 
+    //load data movie dari room berdasarkan ID dan pake CoroutineScope untuk ambil data dari Dao
     private fun loadMovieFromRoom() {
         CoroutineScope(Dispatchers.IO).launch {
             val movie = movieDao.getMovieById(movieId)
             withContext(Dispatchers.Main) {
+                //nampilin pake displayMovieData juga
                 displayMovieData(movie)
             }
         }
     }
 
+    //nampilin data film ke antar muka di binding sama id yang ada di item_movie.xml nampilin gambar pake glide karena dia link
     private fun displayMovieData(movie: Movie?) {
         movie?.let {
             binding.movTitle.text = it.moviename
@@ -81,10 +86,10 @@ class DetailActivity : AppCompatActivity() {
             binding.intMovieRateR.text = it.movierateR
             binding.movDesc.text = it.moviedesc
             Glide.with(this)
-                .load(it.movieImage) // URL gambar disimpan dalam movieImage di Movie object
-                .placeholder(R.drawable.load) // Placeholder jika gambar belum dimuat
-                .error(R.drawable.error) // Gambar yang ditampilkan jika terjadi kesalahan
-                .into(binding.imageDetail) // ImageView untuk menampilkan gambar
+                .load(it.movieImage) // nampilin gambar sesuai link yang di simpen
+                .placeholder(R.drawable.load) // gambar placeholder sementara sembari gambar asli di load
+                .error(R.drawable.error) // gambar error yang ditampilkan saat ada kesalahan
+                .into(binding.imageDetail) // ditampilinnya di xml yang punya id emageDetail
         }
     }
 }

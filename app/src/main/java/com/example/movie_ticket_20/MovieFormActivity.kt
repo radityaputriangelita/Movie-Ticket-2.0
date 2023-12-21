@@ -27,7 +27,7 @@ import androidx.core.app.NotificationCompat
 import com.example.movie_ticket_20.databinding.ActivityMainBinding
 
 class MovieFormActivity : AppCompatActivity() {
-    // Inisialisasi Firestore
+    // Inisialisasi Firebase
     private val firestore = FirebaseFirestore.getInstance()
     private val movieCollectionRef = firestore.collection("movies")
     private lateinit var binding: ActivityMovieFormBinding
@@ -40,6 +40,7 @@ class MovieFormActivity : AppCompatActivity() {
     private val notifId = 90
 
 
+    //akan dicek dulu datanya apakah untuk update atau tambah data.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMovieFormBinding.inflate(layoutInflater)
@@ -153,22 +154,26 @@ class MovieFormActivity : AppCompatActivity() {
                     val star = inputMovieRateS.text.toString()
                     val description = inputMovieDesc.text.toString()
                     val rateUmur = inputMovieRateR.text.toString()
-                    val movieToUpdate = Movie(moviename = title, moviedirector = director, movierateS = star, moviedesc = description, movierateR = rateUmur)
-                    ImagePath?.let { lastImagePath ->
+                    val movieToUpdate = Movie(
+                        moviename = title,
+                        moviedirector = director,
+                        movierateS = star,
+                        moviedesc = description,
+                        movierateR = rateUmur,
+                        movieImage = "" // Assign an empty string initially
+                    )
+
+                    if (ImagePath != null) { // Check if a new image is selected
                         try {
                             val imageRef = imageReference.child("movie_images/${System.currentTimeMillis()}.jpg")
-                            imageRef.putFile(lastImagePath)
+                            imageRef.putFile(ImagePath!!)
                                 .addOnSuccessListener { taskSnapshot ->
                                     imageRef.downloadUrl
                                         .addOnSuccessListener { uri ->
                                             val imageURL = uri.toString()
 
                                             // Memperbarui movieImage jika ada gambar baru diunggah
-                                            val updatedMovie = if (imageURL.isNotEmpty()) {
-                                                movieToUpdate.copy(movieImage = imageURL)
-                                            } else {
-                                                movieToUpdate // Jika tidak ada gambar baru, tetap menggunakan movieImage sebelumnya
-                                            }
+                                            val updatedMovie = movieToUpdate.copy(movieImage = imageURL)
 
                                             // Update data film di Firestore
                                             updateMovie(updatedMovie)
@@ -183,10 +188,25 @@ class MovieFormActivity : AppCompatActivity() {
                         } catch (e: Exception) {
                             Log.e("Error", "Error: $e")
                         }
-                    } ?: run {
-                        Log.e("Error", "Image not selected")
+                    } else { // If no new image is selected, update data without changing the image URL
+                        // Keep the existing movieImage value
+                        movieCollectionRef.document(movieId)
+                            .get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                if (documentSnapshot.exists()) {
+                                    val movie = documentSnapshot.toObject(Movie::class.java)
+                                    movie?.let {
+                                        val updatedMovie = movieToUpdate.copy(movieImage = it.movieImage)
+                                        updateMovie(updatedMovie)
+                                    }
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.e("MovieFormActivity", "Error fetching document", exception)
+                            }
                     }
                 }
+
             }
         }
     }
@@ -229,7 +249,7 @@ class MovieFormActivity : AppCompatActivity() {
         val movieToUpdate = movie.copy(movieID = movieId)
         movieCollectionRef.document(movieId).set(movieToUpdate, SetOptions.merge())
             .addOnSuccessListener {
-                val intent = Intent(this@MovieFormActivity, ListFilmAdminFragment::class.java)
+                val intent = Intent(this@MovieFormActivity, Main::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
                 finish()
