@@ -1,5 +1,7 @@
 package com.example.movie_ticket_20
 
+import android.content.Context
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.bumptech.glide.Glide
@@ -39,7 +41,7 @@ class DetailActivity : AppCompatActivity() {
 
         movieId = intent.getStringExtra("movie_id") ?: ""
         //cek online atau engga
-        if (isOnline()) {
+        if (isOnline(getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)) {
             loadMovieFromFirebase()
         } else {
             loadMovieFromRoom()
@@ -50,8 +52,10 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun isOnline(): Boolean {
-        return true
+    //cekonline function onlin e
+    private fun isOnline(connectivityManager: ConnectivityManager): Boolean {
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
     //mengambil data movie dari firebase berdasarkan ID nya.

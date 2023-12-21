@@ -21,12 +21,13 @@ class Pengguna : AppCompatActivity() {
         binding = ActivityPenggunaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //ngehubungin bottom navigationnya dengan 3 fragment home, favorite, dan settings
         val homeFragment = HomeFragment()
         val favoritesFragment = FavoritesFragment()
         val settingsFragment = SettingsFragment()
 
         makeCurrentFragment(homeFragment)
-
+        //nanti dia bakal bisa zoom in out gitu pake perform scale saat btn nya di klik
         binding.bottomNavPengguna.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.baseline_home -> {
@@ -46,12 +47,14 @@ class Pengguna : AppCompatActivity() {
         }
     }
 
+    //bikin fragmentnya
     private fun makeCurrentFragment(fragment: Fragment) =
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.fl_wrapper_navbottom, fragment)
             commit()
         }
 
+    //animasi zoom nya dkit
     private fun performScaleAnimation(view: View) {
         val scaleAnimation = ScaleAnimation(
             1.0f, 1.2f, // dari scaleX, ke scaleX setelah animasi
@@ -59,6 +62,7 @@ class Pengguna : AppCompatActivity() {
             Animation.RELATIVE_TO_SELF, 0.5f,
             Animation.RELATIVE_TO_SELF, 0.5f
         )
+        //pakein durasi lagi
         scaleAnimation.duration = 200
         scaleAnimation.fillAfter = true
         view.startAnimation(scaleAnimation)

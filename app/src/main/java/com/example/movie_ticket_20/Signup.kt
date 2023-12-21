@@ -9,34 +9,36 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class Signup : AppCompatActivity() {
-
     private lateinit var binding : ActivitySignupBinding
+    //firebase
     private lateinit var firebaseAuth: FirebaseAuth
     private val firestore = FirebaseFirestore.getInstance()
+    //simpen datanya ke firestore user juga
     private val userCollection = firestore.collection("user")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //inialisasi firebase auth
         firebaseAuth = FirebaseAuth.getInstance()
 
         with(binding){
+            //saat btn regis di klik
             btnRegist.setOnClickListener{
                 val username = binding.usernameInputEdittext.text.toString()
                 val email = binding.emailInputEdittext.text.toString()
                 val pass = binding.passwordInputEdittext.text.toString()
-
+                //cek ga boleh kosong
                 if (username.isNotEmpty() && email.isNotEmpty() && pass.isNotEmpty()) {
-                    //tambah user di untuk auth
+                    //tambah user di form untuk auth
                     firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            //get user uid untuk taro di firestore sekalian
+                            //get user uid karena datanya mau ditaro ke firestore sekalian jadi biar mereka punya id yang sama dan kehubung
                             val user = firebaseAuth.currentUser
                             val uid = user?.uid
-                            //role nya udh pass jadi 'pengguna'
+                            //role auto jadi jadi 'pengguna' kalau mau jadi admin cuma bisa diganti kalau diupdate dari firebasenya
                             val newUser = User(username, "pengguna")
 
                             //buat kalo ada buat simpen
@@ -62,7 +64,6 @@ class Signup : AppCompatActivity() {
                     Toast.makeText(this@Signup, "Lengkapi form untuk mendaftar", Toast.LENGTH_SHORT).show()
                 }
             }
-
             //pindah ke signin activity
             signin.setOnClickListener{
                 val intent = Intent(this@Signup, Signin::class.java)

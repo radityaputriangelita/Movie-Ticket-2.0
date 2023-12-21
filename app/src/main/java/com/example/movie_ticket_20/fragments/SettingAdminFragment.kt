@@ -14,12 +14,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class SettingAdminFragment : Fragment() {
+    //binding
     private var _binding: FragmentHomeAdminBinding? = null
-
     private val binding get() = _binding!!
-
+    //firebase
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    //sharedpreferences
     private lateinit var sharedPreferences: SharedPreferences
 
 
@@ -28,19 +29,23 @@ class SettingAdminFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //binding
         _binding = FragmentHomeAdminBinding.inflate(inflater, container, false)
         val view = binding.root
-
+        //firebase
         firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
+        //cek user
         val currentUser = firebaseAuth.currentUser
         currentUser?.let { user ->
+            //ambil uid nya
             val uid = user.uid
             firestore.collection("user").document(uid)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
+                        //hubungin data dari firebase dengan tampilannya
                         val username = document.getString("username")
                         val email = user.email
                         val role = document.getString("role")
@@ -50,25 +55,29 @@ class SettingAdminFragment : Fragment() {
                     }
                 }
         }
-
         return view
     }
 
+    //bagian untuk lifecycle fragmen
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+    //dipanggil saat tampilan dibuat
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        //firebasenya
         firebaseAuth = FirebaseAuth.getInstance()
+        //shared preferences nya
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
-
+        //binding kalau dia btnlogout jalanin logout
         binding.btnLogout.setOnClickListener {
             logout()
         }
     }
 
+    //kode logout
     private fun logout() {
         // Hapus status login dari SharedPreferences
         val autologin = sharedPreferences.edit()
@@ -81,6 +90,7 @@ class SettingAdminFragment : Fragment() {
         // Pindah ke Signin Activity
         val intent = Intent(requireContext(), Signin::class.java)
         startActivity(intent)
-        requireActivity().finish() // Selesaikan activity MainActivity agar tidak kembali saat tombol back ditekan
+        requireActivity().finish()
+        // Selesaikan activity MainActivity agar tidak kembali saat tombol back ditekan
     }
 }

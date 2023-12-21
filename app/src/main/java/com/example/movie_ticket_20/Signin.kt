@@ -12,12 +12,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class Signin : AppCompatActivity() {
-
     private lateinit var binding: ActivitySigninBinding
+
+    //firebase
     private lateinit var firebaseAuth: FirebaseAuth
     private val firestore = FirebaseFirestore.getInstance()
-    private val userCollection = firestore.collection("user")
-
+    //shared preferences
     private lateinit var sharedPreferences:SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +32,7 @@ class Signin : AppCompatActivity() {
         //cek shared preferences itu
         val isLogIn = sharedPreferences.getBoolean("isLogIn", false)
         if (isLogIn){
-            // udh login tapi cek dulu role penggunanya
+            // udh login tapi cek dulu role penggunanya based fireauth yang login
             val currentUser = firebaseAuth.currentUser
             currentUser?.let { user ->
                 val uid = user.uid
@@ -40,6 +40,7 @@ class Signin : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
+                            //get dari role di dokumen uid
                             val role = document.getString("role")
                             if (role == "admin") {
                                 val intent = Intent(this@Signin, Main::class.java)
@@ -61,10 +62,12 @@ class Signin : AppCompatActivity() {
 
 
         with(binding){
+            //btnlogin pas diklik
             btnLogin.setOnClickListener{
                 val email = binding.emailInputEdittext.text.toString()
                 val pass = binding.passwordInputEdittext.text.toString()
 
+                //email sama pass nya harus ada isinya
                 if (email.isNotEmpty() && pass.isNotEmpty()) {
                     // sign in ke main activity
                     firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
@@ -104,7 +107,7 @@ class Signin : AppCompatActivity() {
                                     }
                             }
                         } else {
-                            // Sign-in tidak berhasil karena data tidak valid
+                            // Signin gagal karena data nya ga valid
                             Toast.makeText(this@Signin, "Login gagal. Periksa kembali email dan password Anda.", Toast.LENGTH_SHORT).show()
                         }
                     }

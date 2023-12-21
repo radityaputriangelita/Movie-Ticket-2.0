@@ -20,7 +20,6 @@ interface MovieDao {
     @Query("SELECT * FROM localmovies WHERE movieID = :id")
     fun getMovieById(id: String): Movie?
 
-
     // Pada DAO
     @Transaction
     fun insertMovies(localmovies: List<Movie>) {

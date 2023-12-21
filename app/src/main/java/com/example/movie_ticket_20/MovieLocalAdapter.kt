@@ -1,5 +1,5 @@
 package com.example.movie_ticket_20
-
+//movie adapter saat pakai yang room karena dia ga bakal bisa di klik atau di longclik
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,25 +25,27 @@ class MovieLocalAdapter(private val movieList: List<Movie>) :
             rating.text = movie.movierateS
             batasUmur.text = movie.movierateR
             Glide.with(itemView)
-                .load(movie.movieImage) // Assuming movieImage is the URL in your Movie data class
-                .placeholder(R.drawable.load) // Placeholder image while loading
-                .error(R.drawable.error) // Image to show in case of error loading
+                .load(movie.movieImage) // tampilin image dari link
+                .placeholder(R.drawable.load) // image sementara dia load
+                .error(R.drawable.error) // image error atau kosong
                 .into(movieImage)
         }
     }
 
+    //buat tampilannya
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieLocalAdapter.MovieViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_movie, parent, false)
         return MovieViewHolder(itemView)
     }
 
+    //hubungin dia ke tampilanny
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val currentMovie = movieList[position]
         holder.bind(currentMovie)
     }
 
-
+    //cek jumlah item di list nya
     override fun getItemCount(): Int {
         return movieList.size
     }

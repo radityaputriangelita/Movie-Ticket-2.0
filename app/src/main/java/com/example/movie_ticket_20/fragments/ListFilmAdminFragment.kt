@@ -26,14 +26,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ListFilmAdminFragment : Fragment() {
+    //binding
     private var _binding: FragmentListFilmAdminBinding? = null
     private val binding get() = _binding!!
+    //adapter dan recycle view
     private lateinit var movieAdapter: MovieAdapter
     private lateinit var recyclerView: RecyclerView
-
-
+    //firestore
     private lateinit var firestore: FirebaseFirestore
     private val movieList: ArrayList<Movie> = ArrayList()
+    //offline
     private lateinit var movieCollectionRef: CollectionReference
     private lateinit var movieDao: MovieDao
 
@@ -42,13 +44,14 @@ class ListFilmAdminFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //binding
         _binding = FragmentListFilmAdminBinding.inflate(inflater, container, false)
         val view = binding.root
-
+        //firestore
         firestore = FirebaseFirestore.getInstance()
+        //offline
         movieCollectionRef = firestore.collection("movies")
         movieDao = MovieDatabase.getDatabase(requireContext()).movieDao()
-
 
         setupRecyclerView()
         setupButtons()
@@ -58,9 +61,11 @@ class ListFilmAdminFragment : Fragment() {
         } else {
             displayLocalMovies()
         }
+
         return view
     }
 
+    //set up kalau dia di klik atau klik lama
     private fun setupRecyclerView() {
         recyclerView = binding.rvMovie
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -74,25 +79,38 @@ class ListFilmAdminFragment : Fragment() {
         recyclerView.adapter = movieAdapter
     }
 
+    //setup btn  nya jadi
     private fun setupButtons() {
-        binding.btnTambah.setOnClickListener {
-            navigateToAddMovie()
+        //online bisa nambahin
+        if (isOnline(requireContext())) {
+            binding.btnTambah.setOnClickListener {
+                navigateToAddMovie()
+            }
+        } else {
+            // nonaktif btn
+            binding.btnTambah.isEnabled = false
         }
     }
 
+
+    //navigate ke form
     private fun navigateToAddMovie() {
         val intent = Intent(requireContext(), MovieFormActivity::class.java)
+        //dengan action type nya dd
         intent.putExtra("action_type", "add")
         startActivity(intent)
     }
 
+    //navigate untuk update
     private fun navigateToUpdateMovie(movie: Movie) {
         val intent = Intent(requireContext(), MovieFormActivity::class.java)
+        //bawa movie id dia juga action type update
         intent.putExtra("action_type", "update")
-        intent.putExtra("movie_id", movie.movieID) // or any other necessary data
+        intent.putExtra("movie_id", movie.movieID)
         startActivity(intent)
     }
 
+    //cek online atau offline
     private fun isOnline(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
@@ -100,20 +118,21 @@ class ListFilmAdminFragment : Fragment() {
     }
 
     private fun loadMoviesFromFirestore() {
+        //cek dia ada apa engga
         movieCollectionRef.addSnapshotListener { snapshot, e ->
-            if (e != null) {
-                // Handle error
-                return@addSnapshotListener
-            }
-
+            if (e != null) { return@addSnapshotListener}
             if (snapshot != null) {
+                //cek dari list di firebase
                 val movieListFirestore = mutableListOf<Movie>()
+                //nampilin pake for loop
                 for (document in snapshot) {
                     val movie = document.toObject(Movie::class.java)
                     movieListFirestore.add(movie)
                 }
 
+                //untuk input output ke databasenya
                 CoroutineScope(Dispatchers.IO).launch {
+                    //isinya nanti semua datanya yang dibawah di get dari firebase
                     val movieEntities = movieListFirestore.map { movie ->
                         Movie(
                             movieID = movie.movieID,
@@ -126,14 +145,14 @@ class ListFilmAdminFragment : Fragment() {
                         )
                     }
 
-                    // Delete all existing data in Room Database
+                    // Hapus data yang ada di ROOM
                     movieDao.deleteAllMovies()
 
-                    // Insert new data from Firestore to Room Database
+                    // isi ROOM dengan data baru dari firebase
                     movieDao.insertMovies(movieEntities)
 
                     withContext(Dispatchers.Main) {
-                        // Update adapter from data fetched from Firestore
+                        // update data barunya
                         movieAdapter = MovieAdapter(movieEntities,
                             onItemClick = { selectedMovie ->
                                 navigateToUpdateMovie(selectedMovie)
@@ -148,10 +167,9 @@ class ListFilmAdminFragment : Fragment() {
         }
     }
 
-
-
-
+    //nampilin data dari local movie nya
     private fun displayLocalMovies() {
+        //buat ngubah data di databse
         CoroutineScope(Dispatchers.IO).launch {
             val movieList = movieDao.getAllMovies()
             Log.d("LocalDatabase", "Retrieved ${movieList.size} rows from local database")
@@ -162,18 +180,21 @@ class ListFilmAdminFragment : Fragment() {
         }
     }
 
+    //hapus movie
     private fun deleteMovie(movie: Movie) {
+        //cek uid movie itu
         movieCollectionRef.document(movie.movieID)
             .delete()
             .addOnSuccessListener {
+                //hapus dari list
                 movieList.remove(movie)
                 movieAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
-                // Handle failure
             }
     }
 
+    //bagian untuk lifecycle fragment
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
