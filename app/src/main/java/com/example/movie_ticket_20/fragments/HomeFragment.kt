@@ -6,7 +6,6 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -15,14 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movie_ticket_20.DetailActivity
 import com.example.movie_ticket_20.MovieAdapter
-import com.example.movie_ticket_20.MovieLocalAdapter
 import com.example.movie_ticket_20.MovieLocalAdapterUser
 import com.example.movie_ticket_20.User
 import com.example.movie_ticket_20.database.Movie
 import com.example.movie_ticket_20.database.MovieDao
 import com.example.movie_ticket_20.database.MovieDatabase
 import com.example.movie_ticket_20.databinding.FragmentHomeBinding
-import com.example.movie_ticket_20.databinding.FragmentListFilmAdminBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore

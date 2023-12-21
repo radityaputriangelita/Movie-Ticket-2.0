@@ -9,12 +9,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.movie_ticket_20.DetailActivity
 import com.example.movie_ticket_20.database.Movie
 import com.example.movie_ticket_20.MovieAdapter
 import com.example.movie_ticket_20.MovieFormActivity
-import com.example.movie_ticket_20.MovieLocalAdapter
+import com.example.movie_ticket_20.MovieLocalAdapterUser
 import com.example.movie_ticket_20.database.MovieDao
 import com.example.movie_ticket_20.database.MovieDatabase
 import com.example.movie_ticket_20.databinding.FragmentListFilmAdminBinding
@@ -171,13 +173,25 @@ class ListFilmAdminFragment : Fragment() {
     private fun displayLocalMovies() {
         //buat ngubah data di databse
         CoroutineScope(Dispatchers.IO).launch {
-            val movieList = movieDao.getAllMovies()
-            Log.d("LocalDatabase", "Retrieved ${movieList.size} rows from local database")
+            val localMovies = movieDao.getAllMovies()
+            Log.d("LocalDatabase", "Retrieved ${localMovies.size} rows from local database")
             withContext(Dispatchers.Main) {
-                val localAdapter = MovieLocalAdapter(movieList)
+                val localAdapter = MovieLocalAdapterUser(localMovies,
+                    onItemClick = { selectedMovie ->
+                        //nampilin detail pass offline dan ada toast suruh nyambung internet kalau mau modif
+                        navigateToDetailMovie(selectedMovie)
+                        Toast.makeText(context, "Tidak dapat modifikasi data, silakan menyambung ke Internet", Toast.LENGTH_SHORT).show()
+                    }
+                )
                 recyclerView.adapter = localAdapter
             }
         }
+    }
+    //kalau dia offline mindahinnya ke detail bukan detail
+    private fun navigateToDetailMovie(movie: Movie) {
+        val intent = Intent(requireContext(), DetailActivity::class.java)
+        intent.putExtra("movie_id", movie.movieID)
+        startActivity(intent)
     }
 
     //hapus movie
